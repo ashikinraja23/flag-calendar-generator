@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FLAG Calendar Generator - Fast Like A Girl</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #4A148C;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            text-align: center;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        
+        .phase-guide {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .phase-guide h3 {
+            color: #4A148C;
+            margin-bottom: 15px;
+        }
+        
+        .phase-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+        
+        .phase-emoji {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+        
+        .form-section {
+            margin-bottom: 30px;
+        }
+        
+        .person-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .person-card h3 {
+            color: #4A148C;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        input[type="text"],
+        input[type="date"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .add-person-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+        
+        .add-person-btn:hover {
+            background: #5568d3;
+        }
+        
+        .remove-person-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            float: right;
+        }
+        
+        .remove-person-btn:hover {
+            background: #c82333;
+        }
+        
+        .generate-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s;
+        }
+        
+        .generate-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .generate-btn:active {
+            transform: translateY(0);
+        }
+        
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .month-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .month-selector > div {
+            flex: 1;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .month-selector {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌸 FLAG Calendar Generator</h1>
+        <p class="subtitle">Fast Like A Girl by Dr. Mindy Pelz</p>
+        
+        <div class="phase-guide">
+            <h3>The 5 Phases</h3>
+            <div class="phase-item">
+                <span class="phase-emoji">🔴</span>
+                <span><strong>Menstruation (D1-5):</strong> Rest & gentle movement, 0-13hr fasting</span>
+            </div>
+            <div class="phase-item">
+                <span class="phase-emoji">🟡</span>
+                <span><strong>Power Phase (D6-12):</strong> HIIT & heavy lifting, 13-72hr fasting</span>
+            </div>
+            <div class="phase-item">
+                <span class="phase-emoji">🟢</span>
+                <span><strong>Manifestation (D13-15):</strong> Peak energy & strength, 13-72hr fasting</span>
+            </div>
+            <div class="phase-item">
+                <span class="phase-emoji">🔵</span>
+                <span><strong>Nurture Phase (D16-19):</strong> Moderate workouts, 13-15hr fasting</span>
+            </div>
+            <div class="phase-item">
+                <span class="phase-emoji">🟣</span>
+                <span><strong>Pre-Menstrual (D20-28):</strong> Restorative yoga, 0-13hr fasting</span>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h3>Calendar Settings</h3>
+            <div class="month-selector">
+                <div class="form-group">
+                    <label for="startMonth">Start Month</label>
+                    <input type="month" id="startMonth" required>
+                </div>
+                <div class="form-group">
+                    <label for="numMonths">Number of Months</label>
+                    <select id="numMonths">
+                        <option value="1">1 Month</option>
+                        <option value="2" selected>2 Months</option>
+                        <option value="3">3 Months</option>
+                        <option value="6">6 Months</option>
+                        <option value="12">12 Months</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="cycleLength">Default Cycle Length (days)</label>
+                <input type="number" id="cycleLength" value="28" min="21" max="35">
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h3>People to Track</h3>
+            <div id="peopleContainer">
+                <!-- People will be added here -->
+            </div>
+            <button class="add-person-btn" onclick="addPerson()">+ Add Person</button>
+        </div>
+        
+        <button class="generate-btn" onclick="generateCalendars()">📅 Generate Calendars</button>
+        
+        <div class="success-message" id="successMessage">
+            ✓ Calendars generated successfully! Download should start automatically.
+        </div>
+    </div>
+    
+    <script>
+        let personCount = 0;
+        
+        // Initialize with current month
+        window.onload = function() {
+            const today = new Date();
+            const currentMonth = today.toISOString().slice(0, 7);
+            document.getElementById('startMonth').value = currentMonth;
+            
+            // Add first person by default
+            addPerson();
+        };
+        
+        function addPerson() {
+            personCount++;
+            const container = document.getElementById('peopleContainer');
+            const personCard = document.createElement('div');
+            personCard.className = 'person-card';
+            personCard.id = `person-${personCount}`;
+            
+            personCard.innerHTML = `
+                <button class="remove-person-btn" onclick="removePerson(${personCount})">Remove</button>
+                <h3>Person ${personCount}</h3>
+                <div class="form-group">
+                    <label for="name-${personCount}">Name</label>
+                    <input type="text" id="name-${personCount}" placeholder="Enter name" required>
+                </div>
+                <div class="form-group">
+                    <label for="period-${personCount}">Last Period Start Date</label>
+                    <input type="date" id="period-${personCount}" required>
+                </div>
+            `;
+            
+            container.appendChild(personCard);
+        }
+        
+        function removePerson(id) {
+            const element = document.getElementById(`person-${id}`);
+            element.remove();
+        }
+        
+        function calculateCycleDay(currentDate, cycleStartDate, cycleLength) {
+            const daysSince = Math.floor((currentDate - cycleStartDate) / (1000 * 60 * 60 * 24));
+            if (daysSince < 0) return null;
+            return (daysSince % cycleLength) + 1;
+        }
+        
+        function getPhaseInfo(cycleDay) {
+            const phases = {
+                'Menstruation': {days: [1, 5], color: 'F8BBD0', emoji: '🔴', fasting: '0-13h', workout: 'Rest/Gentle'},
+                'Power Phase': {days: [6, 12], color: 'FFF9C4', emoji: '🟡', fasting: '13-72h', workout: 'HIIT/Heavy'},
+                'Manifestation': {days: [13, 15], color: 'C8E6C9', emoji: '🟢', fasting: '13-72h', workout: 'Strength'},
+                'Nurture': {days: [16, 19], color: 'BBDEFB', emoji: '🔵', fasting: '13-15h', workout: 'Moderate'},
+                'Pre-Menstrual': {days: [20, 28], color: 'E1BEE7', emoji: '🟣', fasting: '0-13h', workout: 'Restorative'}
+            };
+            
+            for (let [name, info] of Object.entries(phases)) {
+                if (cycleDay >= info.days[0] && cycleDay <= info.days[1]) {
+                    return {name, ...info};
+                }
+            }
+            return null;
+        }
+        
+        function generateCalendars() {
+            const startMonth = document.getElementById('startMonth').value;
+            const numMonths = parseInt(document.getElementById('numMonths').value);
+            const cycleLength = parseInt(document.getElementById('cycleLength').value);
+            
+            if (!startMonth) {
+                alert('Please select a start month');
+                return;
+            }
+            
+            // Collect people data
+            const people = [];
+            const personCards = document.querySelectorAll('.person-card');
+            
+            personCards.forEach(card => {
+                const id = card.id.split('-')[1];
+                const name = document.getElementById(`name-${id}`).value;
+                const periodDate = document.getElementById(`period-${id}`).value;
+                
+                if (name && periodDate) {
+                    people.push({
+                        name: name,
+                        periodStart: new Date(periodDate)
+                    });
+                }
+            });
+            
+            if (people.length === 0) {
+                alert('Please add at least one person');
+                return;
+            }
+            
+            // Create workbook
+            const wb = XLSX.utils.book_new();
+            
+            // Generate calendars for each person and month
+            people.forEach(person => {
+                const [year, month] = startMonth.split('-').map(Number);
+                
+                for (let m = 0; m < numMonths; m++) {
+                    const currentMonth = new Date(year, month - 1 + m, 1);
+                    const monthName = currentMonth.toLocaleString('default', { month: 'long' });
+                    const currentYear = currentMonth.getFullYear();
+                    const daysInMonth = new Date(currentYear, currentMonth.getMonth() + 1, 0).getDate();
+                    
+                    const sheetData = [];
+                    
+                    // Title
+                    sheetData.push([`FAST LIKE A GIRL - ${person.name}'s ${monthName} ${currentYear}`]);
+                    sheetData.push([`Cycle Start: ${person.periodStart.toLocaleDateString()} (${cycleLength}-day cycle)`]);
+                    sheetData.push([]);
+                    sheetData.push(['Date', 'Day', 'Cycle Day', 'Phase', 'Fasting', 'Workout', 'Notes']);
+                    
+                    // Generate days
+                    for (let day = 1; day <= daysInMonth; day++) {
+                        const currentDate = new Date(currentYear, currentMonth.getMonth(), day);
+                        const cycleDay = calculateCycleDay(currentDate, person.periodStart, cycleLength);
+                        
+                        let phase = '';
+                        let fasting = '';
+                        let workout = '';
+                        
+                        if (cycleDay) {
+                            const phaseInfo = getPhaseInfo(cycleDay);
+                            if (phaseInfo) {
+                                phase = `${phaseInfo.emoji} ${phaseInfo.name}`;
+                                fasting = phaseInfo.fasting;
+                                workout = phaseInfo.workout;
+                            }
+                        }
+                        
+                        sheetData.push([
+                            `${currentMonth.getMonth() + 1}/${day}`,
+                            currentDate.toLocaleDateString('en-US', { weekday: 'short' }),
+                            cycleDay || '',
+                            phase,
+                            fasting,
+                            workout,
+                            ''
+                        ]);
+                    }
+                    
+                    const ws = XLSX.utils.aoa_to_sheet(sheetData);
+                    
+                    // Set column widths
+                    ws['!cols'] = [
+                        {wch: 10},
+                        {wch: 10},
+                        {wch: 10},
+                        {wch: 20},
+                        {wch: 12},
+                        {wch: 18},
+                        {wch: 25}
+                    ];
+                    
+                    const sheetName = `${person.name} ${monthName}`.substring(0, 31);
+                    XLSX.utils.book_append_sheet(wb, ws, sheetName);
+                }
+            });
+            
+            // Generate filename
+            const filename = `FLAG_Calendars_${startMonth}.xlsx`;
+            
+            // Save file
+            XLSX.writeFile(wb, filename);
+            
+            // Show success message
+            const successMsg = document.getElementById('successMessage');
+            successMsg.style.display = 'block';
+            setTimeout(() => {
+                successMsg.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
