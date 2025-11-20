@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FLAG Calendar Generator - Fast Like A Girl</title>
+    <title>FLAG Calendar Generator</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         * {
@@ -19,13 +19,10 @@
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
             background-attachment: fixed;
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             padding: 20px;
             position: relative;
         }
@@ -37,91 +34,184 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            z-index: -1;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            z-index: 0;
+            pointer-events: none;
         }
         
         .container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            max-width: 800px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            box-shadow: 0 30px 90px rgba(0,0,0,0.3), 0 0 0 1px rgba(0,0,0,0.3);
+            max-width: 900px;
             width: 100%;
-            padding: 40px;
+            padding: 50px;
             position: relative;
             z-index: 1;
+            margin: 0 auto;
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
         }
         
         h1 {
-            color: #4A148C;
-            margin-bottom: 10px;
-            font-size: 2.5em;
-            text-align: center;
+            color: #000000;
+            margin-bottom: 8px;
+            font-size: 3em;
+            font-weight: 800;
+            letter-spacing: -1px;
         }
         
         .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 30px;
+            color: #6b7280;
             font-size: 1.1em;
+            font-weight: 500;
         }
         
         .phase-guide {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 30px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .phase-guide:hover {
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
+            transform: translateY(-2px);
         }
         
         .phase-guide h3 {
             color: #4A148C;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            font-weight: 700;
+        }
+        
+        .phase-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 12px;
         }
         
         .phase-item {
             display: flex;
             align-items: center;
-            margin-bottom: 10px;
-            font-size: 0.9em;
+            padding: 12px 16px;
+            background: white;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+        
+        .phase-item:hover {
+            border-color: #667eea;
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
         }
         
         .phase-emoji {
-            font-size: 1.5em;
-            margin-right: 10px;
-            min-width: 30px;
+            font-size: 1.8em;
+            margin-right: 12px;
+            min-width: 35px;
+        }
+        
+        .phase-info {
+            flex: 1;
+        }
+        
+        .phase-name {
+            font-weight: 700;
+            color: #1f2937;
+            display: block;
+            margin-bottom: 2px;
+        }
+        
+        .phase-details {
+            font-size: 0.85em;
+            color: #6b7280;
         }
         
         .form-section {
-            margin-bottom: 30px;
+            margin-bottom: 35px;
         }
         
         .form-section h3 {
-            color: #4A148C;
-            margin-bottom: 15px;
+            color: #1f2937;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-icon {
+            font-size: 1.2em;
         }
         
         .person-card {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 15px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 20px;
             position: relative;
+            border: 2px solid #000000;
+            transition: all 0.3s ease;
+            animation: slideIn 0.4s ease-out;
         }
         
-        .person-card h3 {
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .person-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
+        }
+        
+        .person-card h4 {
             color: #4A148C;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            font-weight: 700;
         }
         
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
         
         label {
             display: block;
-            margin-bottom: 5px;
-            color: #333;
+            margin-bottom: 8px;
+            color: #374151;
             font-weight: 600;
+            font-size: 0.95em;
         }
         
         input[type="text"],
@@ -130,11 +220,12 @@
         input[type="month"],
         select {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
+            padding: 14px 16px;
+            border: 2px solid #000000;
+            border-radius: 12px;
             font-size: 16px;
-            transition: border-color 0.3s;
+            font-family: inherit;
+            transition: all 0.3s ease;
             background: white;
         }
         
@@ -142,132 +233,337 @@
         select:focus {
             outline: none;
             border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+        
+        input:hover:not(:focus),
+        select:hover:not(:focus) {
+            border-color: #9ca3af;
+        }
+        
+        .btn {
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
         }
         
         .add-person-btn {
-            background: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
+            width: 100%;
+            padding: 14px;
             font-size: 16px;
-            margin-top: 10px;
-            transition: background 0.3s;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
         }
         
         .add-person-btn:hover {
-            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .add-person-btn:active {
+            transform: translateY(0);
         }
         
         .remove-person-btn {
-            background: #dc3545;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
             color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 6px;
-            cursor: pointer;
+            padding: 8px 16px;
             font-size: 14px;
             position: absolute;
-            top: 20px;
-            right: 20px;
+            top: 24px;
+            right: 24px;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
         }
         
         .remove-person-btn:hover {
-            background: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
         }
         
         .generate-btn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            border: none;
-            padding: 15px 40px;
-            border-radius: 10px;
+            padding: 18px 40px;
             font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
+            font-weight: 700;
             width: 100%;
-            transition: transform 0.2s;
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .generate-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .generate-btn:hover::before {
+            left: 100%;
         }
         
         .generate-btn:hover {
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(102, 126, 234, 0.5);
         }
         
         .generate-btn:active {
-            transform: translateY(0);
+            transform: translateY(-1px);
         }
         
         .success-message {
-            background: #d4edda;
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
             color: #155724;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
+            padding: 18px;
+            border-radius: 12px;
+            margin-top: 24px;
             display: none;
             text-align: center;
+            font-weight: 600;
+            border: 2px solid #000000;
+            animation: slideDown 0.4s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
         .month-selector {
-            display: flex;
-            gap: 10px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
             margin-bottom: 20px;
         }
         
-        .month-selector > div {
-            flex: 1;
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
         }
         
-        @media (max-width: 600px) {
-            body {
-                padding: 10px;
-            }
-            
+        .info-card {
+            background: white;
+            border: 2px solid #000000;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .info-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        }
+        
+        .info-card-value {
+            font-size: 2em;
+            font-weight: 700;
+            color: #4A148C;
+            margin-bottom: 4px;
+        }
+        
+        .info-card-label {
+            font-size: 0.9em;
+            color: #6b7280;
+            font-weight: 500;
+        }
+        
+        .toggle-guide {
+            background: none;
+            border: 2px solid #667eea;
+            color: #667eea;
+            padding: 10px 20px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .toggle-guide:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        .guide-collapsed {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+        }
+        
+        .guide-expanded {
+            max-height: 1000px;
+            transition: max-height 0.4s ease-in;
+        }
+        
+        @media (max-width: 768px) {
             .container {
-                padding: 20px;
+                padding: 30px 20px;
             }
             
             h1 {
-                font-size: 1.8em;
+                font-size: 2.2em;
             }
             
             .month-selector {
-                flex-direction: column;
+                grid-template-columns: 1fr;
             }
+            
+            .phase-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .remove-person-btn {
+                position: static;
+                margin-top: 10px;
+                width: 100%;
+            }
+        }
+        
+        .feature-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: 700;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+        
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+            color: #667eea;
+            margin-left: 4px;
+        }
+        
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #1f2937;
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.85em;
+        }
+        
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        .rainbow-icon {
+            display: inline-block;
+            font-size: 0.9em;
+            background: linear-gradient(90deg, 
+                #FF0000 0%, 
+                #FF7F00 16.66%, 
+                #FFFF00 33.33%, 
+                #00FF00 50%, 
+                #0000FF 66.66%, 
+                #4B0082 83.33%, 
+                #9400D3 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 900;
+        }
+        
+        .flag-icon {
+            width: 50px;
+            height: 50px;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 10px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🌸 FLAG Calendar Generator</h1>
-        <p class="subtitle">Fast Like A Girl by Dr. Mindy Pelz</p>
+        <div class="header">
+            <h1><img src="data:image/webp;base64,UklGRqoZAABXRUJQVlA4WAoAAAAgAAAA4AAA4AAASUNDUMgBAAAAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADZWUDggvBcAADBhAJ0BKuEA4QA+USKPRKOiIZRZDjA4BQS1N26uzJtfj35d92VfPs39w/XH80PmB4T6Je6/1H9G/1j9o+lRn7/deoj4r+hf67/AflN9B/Qb/DfUC/h38H/3H+T/zPYP8wP7ff772nv8N/mfZz/mPUA/m3/G/7n/r7R70Bf2j9XP/gfth/2fkz/cH/3/5T4C/1t/8f+89wD/8eoB+//HIf7b1p/SftH5m9Vj2w5VrRz9f7T+wH958QL11/hPaCe7OAsVvBz+q9QDgIjJebvUI8q///+0f9uP/1/2PgY/W///nOdfwQgEX0lS7PQr7bLgkJHcSHe7SNH4dIwl+vJBA3FP1HxJZLO0Z0WChFLwbzC9ZHlDhKzertGPDWMhVdTzhZNmkFj3uEljGLaAJz5aQYmaGYPrujnV5yhC3XuufEtCjLdsZBjhyS1S1BKX0J7SQOAwo5s5YRerkYFQIZIxk45BCWImrmtqLjEOeTerhckwZDm4k0j0i/FEaHDnrFW5YnVvhtEmi/CVzs3orhQtDfFCC7jLf1I/lcBoEkj8xnR5bggW8lJb3qNgb9i1QRLwbwU9/QfY97cq6g0QINM4ULRe9ac2hjR1hgdPfbgDBk9MdZMuj/TEs89NzvREpX8LEaPSJQ5UT9KgWo8OFn3GIlvGBiKe76gFClBsSLWnVPI01HGU9hZvfn5d6fgHhXFVj8jv1EAoUwhQ6iVKNc0FfYfqLGWOjJHufScZ+89aphO/uJpw9TGiEY673DrxrhqEEEK4P8FoTlyyi5LgNBdusl38KIXbG0QGrks8jFPQ75aCyGoMOBsMFWO0yvcuojftE0y/e+2drpMyzEZUKilIiqG0n5tIQ5P/Lgeqkv0A5npzCVJ/ReJ7rpTXnnj0ZUIsquIf2K4wEZ5QHS92RlooS2Nt8N19s1M8RVW1evuKWOufZnxnKtK+F3cIMDKQcFrc27ZR61yyUBEWfofGiOkzZj1Q3jGOycSGJsyxoiI1zLa7sCsE350wKoRSk3sngzZ4Ok5dIX7k8ybtLe+NVAxjGMYogAD++3Bv1LnO9X+zYBlBzIIXc31BNpAoadPkUubUJ6ZHR1bnWPeNr23/SGsaxhcPuVwktpC9LcSHCBVws1B/2wc3s/Fw7hciqUV6a54PNGsOJfU3fPlgIeYx3B7I/oT1FQ3/UEwecbq4CE1Cw/o3J9r4Ofnzb2nqkCbywWg9/uO8K4vXlrSsU01n2PaGQZewB+nOTD/sud/bSk6zrbpIo++zqa7XyRHOhZHHaNyIdMYWKXy7xP9CQ96GMmdPZ4yDwW19OEveExchtb6j6dTtJZD+Fho183+kae8KNsDwTpMBPCwIn/77qo/VvyV1lgavubEROw4F40DRV9iX55rUTBq/fAHLgGEiPCPO+93iwgY+2mG3m4AAHjzjudFNjWvnq0MqwOygnL5EKb3FsN9iXDfbC6WDjeiLnQc6moOYgVIxt0gs/0PPs0ySMZSj7BhtXUUDhzBoULgyo4xBj/2nYlkKQdaDTN6VpCQFs49TMctPTJyEVUAZiDV3MvuLSylR6mcvlZSLOomSw/0nBLKqNKX/a93d+Shdwz6bGwHKF2zIRrq6oP8HgPLfkIhDMsoAk4Yd1YMb4fywfnTCsBBJ7CpPT1vUzrBWKFM9Pnl4uFkJWOGZiA8EUBd8PAzoGmETPlPcmOr6kBZ672t7FYcAtt/IL+aLG3uVXEOPGn/K7MPgzULt3smYouSwO1ETX6zHq6KKQWj78MW8NE0rUU8g9r90LnEKk5OGSzLqBhUS3mgHAA+8um0wu2pIw/H11BZaPAPvcUGHquHMP6s333Va8TVuZh94exefwROxRRQ81tS61RB3tAJ59YXv48X8CHXsuKZ29uQ3Yt7q5h3ClknT7i1pcGNXUBwXxWbsC0hQ+aB3Ak5RI5a3PI+9vtQaadLLUlhHAZQ2qt+jMMhgZWLqsrPMBrWnH10ryUILU9g2YheJcABNr1wEhrrq6Jda2JTpKyIdZK1kwXlCJjRKy733G9UmKaNDSXZ5ryBAZCYlvMDhGyTzk0BJRgXZulRqW0BS4ttY410lK6LiX6PWQlT2qk1JqX5g+g1HNYXrY6bTEDRuAeZ567xIOG3og3gEQLJBLeIBhRS116BBwC0JK8k3b5XIHgC2tSxvnMqdtohD6G6PY7ZVMNfrJwuv/gEYKwrlT7DqX7dELXUaggDsMpsXkgHSzMqJcnB6OjoxMIiAITsCKaaHRJLp4WTqu2YV8VzRDIMNrG/9IEGybKGo0vgPJELHO0T11WNtMbdeyTKYqJ6cR9SggCPiK2D0zl1f17nPUOLR0kPaWbAnAQEZXxx47BA3l8tUmcQSu/SpLexFZzRZQWUz5fyXJ9LIi9r16pfEDkOJS0F1vLKDuj+DAfomHsLFclRXr7rO67M8jqDT0GoTGNin4mNE+dNLOlIVTAJ6qAH/iSN8AJLlD+q0nEzu5dsELSlvyGW2iGtgGgdMmjI3AZzLLV4M+arX/vdoCIJ21w3dEBueLNEMbEifsX+jMEVW3SGhNFak31iq/qmSNp5mu1tVyTumnfxh4OeWgQp6mcoAaaiHKFpvh+XiDJirkXVAOMa2nwTIlTKdOtUvv4xeqrOU/glQCauMslnFda8ADXJE3W3vajgK7z3XJql/8khieZNuj4P1l6or2DMpc8fD44guTSX1jZlXJmDpZ7JyXCQ3/wDlusJ+DP1/xz8GxxR/Mb9xjYQKvmzXRwUD/BwYiBiDVafi/xkeIdMbKrY5D5cBMTh77pGFZQwu0Zngyc9JFJD40VpjxEkXYfaIaiWZGRDtZ805w0lO7817O+G3v3VSal3P0Dwz90zIkp9c4mVyYhkhn6YjjV5VLSmD9E6MAmgg05RNJtINRCvMmSf4PX2bBAz4XaamrF65AOrSf8PyRIo+o8VetCsc5Al/V9wHd/TKUgueDh1I3Eb5/Wfe9NPZPqq7wy/g/7EMDAKQPd+JbKViDRPOwskuYkIVlrL5c4/uKthfa5ZhYDzqh1aGO538Y76ZhFdt+p2fyDj1b7RiOsLnuv0HJgR/+LcRx7W5p4J+PiINKTGma6/NHcnaQtXB+zpfji3yhzrlCXUBkPpoO5rVUlSADW1823DlBtszdnDOYMhfx4mWa00DyGCNBUKCsX91y1au+DYH3hniTzAfsgt054A29PM6p9vlqN5yoY+HwXWY8i/NJn/SgX9hmsbfn80O4ld3xSkyFHQ7xklXLQ10ZxkdTIsv2sm2EV5z11ldP34NObdVIjF6K8zafDV01EEtlZ8xQVAWSU8VK8Nx5jsvemPtrRkMofBgtjx56wUqNOUc6+2iABEHqgr4Uw8r1C5H43GFAXBuoO0uJ+BgoF1yGEiASa0XfR8Dxx5hEnEGhjGpMO7IJ62A8a/TOEQ8Te/zrztLqpqoHinPonFi8vZrX23S51D3y17MgU5sKYD1oJJyUKNE+Z6KAwymci4eyS+3yDcjbo+28ePoqIot3QMTF4NApMNBbjhN97P5FCLUTQRzqFBGHUNy8gDlGc34cLGUo164l9+ID3b0GbwRXkfgCJRHwwIUzJnGNXiujSUxbWoKfrQVosp3UcYeDbY1wmwVpKCgT+c7b17w2ziBEJkN7kaHwiYGAwFZUHdvndNCidlv8gHvDjysJVXepWjDY3/egy0IIM6Kdzx9GxHMu8wpNikqyvmcZRC+h7bDTIMJZMGkff+stQXHKKnbRbg5HmWYAEMcxwDGr8kygeIzSJNhUZ40cWFxgRI5SE4Y+d4BlRpUGm5JQ3Fd9FeWFeOfH3hyHvmdfj6RspiIH8Ky3EmQZ54bN1WnVzC/nL149KdfKepaUaU6D5kNmUi4AJwY7UXV3Iu69SvD/qmZQx6NDSfoxM4Z2hT3WfHCW162qH7K854sLVF0Dydo/RDIgFt5e5aJIvlXOnqxjI/mCrh3uvYJNT0vNA4u4mxidqE21U3muFz08q6oTIaH3/+8bciSCTp1nMlfc6pQkPvs0Q3e9WFQR8tbpvJ8rfmK4Kou9eWGD+H5itTM/qn3nnGNGniD5i6RVkeMgw4XmPgw25QqMtOk8cT0RmS+zFgypZK7Q3hL0WQfsTEfQq3Oxoxgu5pOvZv5OpLg05wGDNYdHxI+RdyCPk/89OG6mv9i4cj0GFF/uETRKp9RgucmJtcWMxidZvLFIAzZipPnn4qXevFqAYVpIhFRQPg+yAGKi5PdvwaR0/DVvsnFRdM6J6Vhw2hbt1dUUKhVeT3o/tsji6qX/4x+mQbp914Qze7sVdFET4Se4g+aQMnpD9tdcNjbWURRV6x7nhDKncM03CVajh2/gONSSRSso1oIDxYhIXIL7Tf6loAiNxgQL/HKyVgKVnQo0EnywXsoLWAzFpr1pJ/AolsEGIPn/FXnnN1ZwnqzGsZyzztQ3ZBKxiMqYsBBIbe626c9Bl7TcAHU1F1c0SgqhDs/K5/+uYg0tztk37nSn2uvhtLW/GGeu2h320BI7NUDyDekSmEQroY+vh4EdUTg5839N/O9BkftLSWGX/hZV3FDjjvUWLo6XmWxYCTPdjnGorwoDpLB+2SHv7lfGoRpBd8pQ7mS/IdZBOcj/gr29MxvhGio32OWURHvrquaTGESzWzXBzAo90OVAyT2InB8I1+bEIvfXCExn0sV0jH6CZyu/FT7BgPkGkOBcmoerjtMNTayt7fsicRhsHPVFV6kg/Iit9NjqWvwXzT4nepRI1jqQZn9EFUabt3I9JzUzNVjoPd5ivhT8bAFUjmxXbeYXMdSBEM+PxjOaUQKBcwvsjNc72Hz5ac4uGWA5/C5N6usa5nFCgJlKGRsq6Exh/zA4023Rs9X6WIweRdVld3r88VibhZ4JWJwwqpRjPjz3i1IRnfXkHYzyyhN0UNO780rY9Kbg1+bNBs+8mI8VF8q6+fqXakgNx8gKpWZrqPZkKa445nKDXTL569Yy8WdnNXA8wQ42ur0ER+Cu0tGEmqB82zu+ebuVtAR1Eof60fbk/yTeXDRsytwRJBGQWcDLBcEKV6PDb9VtiSHnNMbrY6/7zdnGd5k5cDlahIoBWF98BTWdd+8oMdU6s7MhWQUHJR3klirnBCHCNXJhs9ZmY+YX3JUXJ1zhEmIrF6P26/9OP+bTQMOX8fERuuzfVnew054yKJxbnfqzR7rG9rUVjXDXvzowjw+gO5S1pJRzXvEtbgzgtJDrfKR4bXVpY+W9JLBFAarsNbRvKm9b57Lv14IHwBZGxRFhVDSsEP8WO5GVkvfHYMn4+rYa7/zvQ+yMdi6rftcWsN+ga4iw5jBaTbgV6D99d5ZH+3ybCivCiJIWGDuAS/yYejsG8bLe4ir1Smfmk2yJuZcmwDvsFvdJFmXvkwqdoBXH2n9yAxliokdPG+0dR5o/LlKXDxuz/NqFLPqvVVcIvTWEaaka8Y8rLzB3Qkxh/g8ZU3L+YCXqyF2+6o0zSYnK25Ksoyv2kGeE8iDNLzdLXbNEfy0p+B32lq7EJyj7tawJSGQYjsRlwgU2wuiYdm4O0O9u2V/d5fPvoteAJBRIPVrm9gdhWc2oHowY3QsG28QmN5qBmYNHgAu5nToA9Ues3ah+FsdoAvW3GMfFwwdyo+XkVljq84MZ4pqY9pOJMsDXOyd7vUbkf6rqF3ejVWK28eL/scR05Wp3vmodhg/0XhaDKb05SCb64iTbY3C0uyxWJz8w4QnJRR2rds4/eGuCihNIseWFIlOCaVykWcMh8fW1oGk2n7SbCDO25OJ7LvjiceC1h7lGhABa8+KgenXAKG1z03Np+8NydnWTwAiWncjbqPF45gQ1wej+al/3h4hX+iuh3HZHf6Ae+w1UnmiGNBOk38ChP9EJDcNj3UcH8gJs+MMB3Jsk7ETXGB1fyIjqvwsBZcfrEsNjP+xGIAN1GRrAqBLiMh6kQkXirF1SgcsAaIdT7WNGJKBvZPeqPVKdRoMbHahJU+y6OYnmuvmmkIjcV86kHBhWlXRc8xfCMwqV/g1sDItaEcIG0q/VxyQFn1DIlaaQIoRQqLUBAClw5xTcFDJaR+z+dHUTwyScRqp/IG89RmMKLpHTdxCzhFnzOL8d/wtGVM3xGecv3LfWHuNWCGG6PtNvpWdRm/40xC59LxjF6CXWjt95yLINyBxld6gCad1HXNSWcgywJvwZPRMmaW+oCxugD7Z4a+136ed1uCNPqQ7VKjYpWynVotYM5J4yW9yNi71vKqe9P2RscaTU/WI/tDwQQ2GMs4g5HlLaMfZDwUgM5vfqvbDBskcoIW5xXvHJsa1BEyroax87IudiPiHlbT0V54FccB5J4cfFhFl5JADevWv6Q+UwM2mC4qYQVq8+hNh1R/+v7WVZm/RHZ0RVqKpMgCYMlfYN3wzgOOkkqs3Vaz+cBjlImlCZfECvQMP+mQDCzgY/DFd68C0Kmu5nPYoosGy1BhNdL1gtMCKdftVrKpzxm1I7rNK9PhJ5CefdHobAG5VbZuBGIeN2ok/gozw33wwVntX76I68urVsVL7MlrtdU1fhYXIagnFvhnf9KhHNtJR3tnoS89ZN6uFqMeHzQ8+KqHKhcjDJn+gOmVigtQ+TrGuIYQq2FzsWEOsJZGoahVjCiL9henIMmad2H3RrO1+irupJ5N2aUE9wR5kAtTigJ7sAyZZdfqRF9dgzwkCb+qXxQNV9trqowKbiQ3CNQBgcmB9thFVk+8PX4P8UGIGN08KrxyKSjT5y+yBYJ2eaIN6ZbuLdm/BL40sUM1/E1QrdVhP9jPYacZgU6GE5c0uoEbrZYAABNPYl2YFAgDHgIfrxAwzD3qh2KbCXSo2tBAyN9zlaXoZGUem+ZDfFvIKf0OOtUTH/FeXBuOkXa0xfxNy1G9LABpd5VLw6BpFRUujmwapIoXo5TsIWelEjRxDOA0EanazlPcI+NUbfGFzW/+jPC9w2bIrtPR56699XS6HjrdfiQeAEAeZQcBxAuw67+wf1RVnbZGXhBZpHPDCdoB7FSbjRtsSmRpMl0L38A2SIpK3f3hfIty1pFQmkt/BrtiyYiVT/XGlt/+wSxaofJF0vetpSLiL/2P/ZxV11xdDDAeUd4/pW4EgAmsHZ5S+vMD0/cu+72Lmaf7VojNYHq7IUgBnINdrqyhHMrc3LJZtp728HtiFrCSy/c50xa82ghlXBHWR/89HNIuP+kBOrrg1zBbgXjl/wdJTw25HwI5AAa/cjvKlM5BhDTb8m8bqOYhE986d2c0eFPzJirMEhVTmaPA+sMX7c9V0H2ESf+PmWv3g9rwSROvzSmpHDKGbYiXeroZq+hM2dLJecSawosFbV2RbaPIleAUI2RXkhgir7UCbUAcBMTbUowQnnRatHTVKXHT/jT5lPn/bD4IooD0i0cWbcA3Vzz7+ZUJUv1BSEvf7AIAsETuKFTd697pSVPEqupk+y9vHhftetM4b9n8270XDqjhPL3vRq2gXoVsoi3o+7jWPozW4JftWm0RQ6h2qd6ozuh4cBz8jjNP66WOCSByDBSrRJHHRThintAsyMcGV7FnMoP0YkAneSMzkaW/5enH6a7UgWkZ67BfIDkawtkLgiLVHCCSnjHUWs7nEPDSgYHfcDGu/b4AAAApdQIqOLwDVJFD/OlghT1pRoCWKaQ3xfy+OXQ2riqHP7QgPw1EnWt9WDs3HwsDsid7ZaiT8Q+tQYoWhyS7GATjIhakQ8/9M0heQPlUdu1JGyuGBLovcz2rTmwHwt/fQ3+4g6cS5abY+UHlfJRBL+FbiZzGVjFkrAhTP5Co5XArYq3Tx7vGuZ1fTk/SLhdFOARrgycN79DSHR598LROvT/sWEluFUpuKTFSKab3PHtiUGCMO5lmMDznQyo+wRot+opJ6K3m2/6yUo2wQVnKHhwyHZ3z5k5q9znvc43Pf6HhxAd5T1jUeB5n6SZMyxetmHFopGHyAE/AgABS6Wp4iBAzS8LdA6dQM/s/fyekc9soU1PBasIIyzi5p7QWr/djV0RSDq+BquKhG8KpBXLJhJNnCuzJlVIMUmmpjsKYzuus8iD2cHR5XMaExJB+woD6PEZhfVIIehkUkFqTR3MMm+xVtZiklYpYgAAAAAAA=" class="flag-icon" alt="Progress Pride Flag"> FLAG</h1>
+            <p class="subtitle">Optimize your health</p>
+        </div>
         
-        <div class="phase-guide">
-            <h3>The 5 Phases</h3>
-            <div class="phase-item">
-                <span class="phase-emoji">🔴</span>
-                <span><strong>Menstruation (D1-5):</strong> Rest & gentle movement, 0-13hr fasting</span>
-            </div>
-            <div class="phase-item">
-                <span class="phase-emoji">🟡</span>
-                <span><strong>Power Phase (D6-12):</strong> HIIT & heavy lifting, 13-72hr fasting</span>
-            </div>
-            <div class="phase-item">
-                <span class="phase-emoji">🟢</span>
-                <span><strong>Manifestation (D13-15):</strong> Peak energy & strength, 13-72hr fasting</span>
-            </div>
-            <div class="phase-item">
-                <span class="phase-emoji">🔵</span>
-                <span><strong>Nurture Phase (D16-19):</strong> Moderate workouts, 13-15hr fasting</span>
-            </div>
-            <div class="phase-item">
-                <span class="phase-emoji">🟣</span>
-                <span><strong>Pre-Menstrual (D20-28):</strong> Restorative yoga, 0-13hr fasting</span>
+        <button class="btn toggle-guide" onclick="toggleGuide()">📖 Show/Hide Phase Guide</button>
+        
+        <div class="phase-guide guide-expanded" id="phaseGuide">
+            <h3>The 5 Menstrual Phases</h3>
+            <div class="phase-grid">
+                <div class="phase-item">
+                    <span class="phase-emoji">🔴</span>
+                    <div class="phase-info">
+                        <span class="phase-name">Menstruation</span>
+                        <span class="phase-details">D1-5 • Rest & gentle • 0-13h fast</span>
+                    </div>
+                </div>
+                <div class="phase-item">
+                    <span class="phase-emoji">🟡</span>
+                    <div class="phase-info">
+                        <span class="phase-name">Power Phase</span>
+                        <span class="phase-details">D6-12 • HIIT & strength • 13-72h fast</span>
+                    </div>
+                </div>
+                <div class="phase-item">
+                    <span class="phase-emoji">🟢</span>
+                    <div class="phase-info">
+                        <span class="phase-name">Manifestation</span>
+                        <span class="phase-details">D13-15 • Peak energy • 13-72h fast</span>
+                    </div>
+                </div>
+                <div class="phase-item">
+                    <span class="phase-emoji">🔵</span>
+                    <div class="phase-info">
+                        <span class="phase-name">Nurture Phase</span>
+                        <span class="phase-details">D16-19 • Moderate • 13-15h fast</span>
+                    </div>
+                </div>
+                <div class="phase-item">
+                    <span class="phase-emoji">🟣</span>
+                    <div class="phase-info">
+                        <span class="phase-name">Pre-Menstrual</span>
+                        <span class="phase-details">D20-28 • Yoga • 0-13h fast</span>
+                    </div>
+                </div>
             </div>
         </div>
         
         <div class="form-section">
-            <h3>Calendar Settings</h3>
+            <h3><span class="section-icon">⚙️</span> Calendar Settings</h3>
             <div class="month-selector">
                 <div class="form-group">
                     <label for="startMonth">Start Month</label>
@@ -286,26 +582,34 @@
             </div>
             
             <div class="form-group">
-                <label for="cycleLength">Default Cycle Length (days)</label>
-                <input type="number" id="cycleLength" value="28" min="21" max="35">
+                <label for="cycleLength">
+                    Default Cycle Length (days)
+                    <span class="tooltip">ℹ️
+                        <span class="tooltiptext">Average menstrual cycle length. Can be adjusted per person below.</span>
+                    </span>
+                </label>
+                <input type="number" id="cycleLength" value="28" min="21" max="45">
             </div>
         </div>
         
         <div class="form-section">
-            <h3>People to Track</h3>
+            <h3><span class="section-icon">👥</span> People to Track</h3>
             <div id="peopleContainer"></div>
-            <button class="add-person-btn" onclick="addPerson()">+ Add Person</button>
+            <button class="btn add-person-btn" onclick="addPerson()">➕ Add Another Person</button>
         </div>
         
-        <button class="generate-btn" onclick="generateCalendars()">📅 Generate Calendars</button>
+        <button class="btn generate-btn" onclick="generateCalendars()">
+            📅 Generate Excel Calendars
+        </button>
         
         <div class="success-message" id="successMessage">
-            ✓ Calendars generated successfully! Download should start automatically.
+            ✅ Calendars generated successfully! Your download should start automatically.
         </div>
     </div>
     
     <script>
         let personCount = 0;
+        let guideExpanded = true;
         
         // Initialize with current month
         window.onload = function() {
@@ -317,6 +621,12 @@
             addPerson();
         };
         
+        function toggleGuide() {
+            const guide = document.getElementById('phaseGuide');
+            guideExpanded = !guideExpanded;
+            guide.className = guideExpanded ? 'phase-guide guide-expanded' : 'phase-guide guide-collapsed';
+        }
+        
         function addPerson() {
             personCount++;
             const container = document.getElementById('peopleContainer');
@@ -324,9 +634,11 @@
             personCard.className = 'person-card';
             personCard.id = `person-${personCount}`;
             
+            const defaultCycleLength = document.getElementById('cycleLength').value;
+            
             personCard.innerHTML = `
-                <button class="remove-person-btn" onclick="removePerson(${personCount})">Remove</button>
-                <h3>Person ${personCount}</h3>
+                ${personCount > 1 ? `<button class="btn remove-person-btn" onclick="removePerson(${personCount})">✕ Remove</button>` : ''}
+                <h4>👤 Person ${personCount}</h4>
                 <div class="form-group">
                     <label for="name-${personCount}">Name</label>
                     <input type="text" id="name-${personCount}" placeholder="Enter name" required>
@@ -335,6 +647,15 @@
                     <label for="period-${personCount}">Last Period Start Date</label>
                     <input type="date" id="period-${personCount}" required>
                 </div>
+                <div class="form-group">
+                    <label for="cycle-${personCount}">
+                        Cycle Length (days)
+                        <span class="tooltip">ℹ️
+                            <span class="tooltiptext">This person's specific cycle length. Overrides the default setting.</span>
+                        </span>
+                    </label>
+                    <input type="number" id="cycle-${personCount}" value="${defaultCycleLength}" min="21" max="45">
+                </div>
             `;
             
             container.appendChild(personCard);
@@ -342,7 +663,8 @@
         
         function removePerson(id) {
             const element = document.getElementById(`person-${id}`);
-            element.remove();
+            element.style.animation = 'slideOut 0.3s ease-out';
+            setTimeout(() => element.remove(), 300);
         }
         
         function calculateCycleDay(currentDate, cycleStartDate, cycleLength) {
@@ -351,13 +673,46 @@
             return (daysSince % cycleLength) + 1;
         }
         
-        function getPhaseInfo(cycleDay) {
+        function getPhaseInfo(cycleDay, cycleLength) {
+            // Adjust phases proportionally for different cycle lengths
+            const ratio = cycleLength / 28;
+            
             const phases = {
-                'Menstruation': {days: [1, 5], color: 'F8BBD0', emoji: '🔴', fasting: '0-13h', workout: 'Rest/Gentle'},
-                'Power Phase': {days: [6, 12], color: 'FFF9C4', emoji: '🟡', fasting: '13-72h', workout: 'HIIT/Heavy'},
-                'Manifestation': {days: [13, 15], color: 'C8E6C9', emoji: '🟢', fasting: '13-72h', workout: 'Strength'},
-                'Nurture': {days: [16, 19], color: 'BBDEFB', emoji: '🔵', fasting: '13-15h', workout: 'Moderate'},
-                'Pre-Menstrual': {days: [20, 28], color: 'E1BEE7', emoji: '🟣', fasting: '0-13h', workout: 'Restorative'}
+                'Menstruation': {
+                    days: [1, Math.round(5 * ratio)],
+                    color: 'F8BBD0',
+                    emoji: '🔴',
+                    fasting: '0-13h',
+                    workout: 'Rest/Gentle movement'
+                },
+                'Power Phase': {
+                    days: [Math.round(6 * ratio), Math.round(12 * ratio)],
+                    color: 'FFF9C4',
+                    emoji: '🟡',
+                    fasting: '13-72h',
+                    workout: 'HIIT/Heavy lifting'
+                },
+                'Manifestation': {
+                    days: [Math.round(13 * ratio), Math.round(15 * ratio)],
+                    color: 'C8E6C9',
+                    emoji: '🟢',
+                    fasting: '13-72h',
+                    workout: 'Peak strength training'
+                },
+                'Nurture': {
+                    days: [Math.round(16 * ratio), Math.round(19 * ratio)],
+                    color: 'BBDEFB',
+                    emoji: '🔵',
+                    fasting: '13-15h',
+                    workout: 'Moderate cardio'
+                },
+                'Pre-Menstrual': {
+                    days: [Math.round(20 * ratio), cycleLength],
+                    color: 'E1BEE7',
+                    emoji: '🟣',
+                    fasting: '0-13h',
+                    workout: 'Restorative yoga'
+                }
             };
             
             for (let [name, info] of Object.entries(phases)) {
@@ -371,10 +726,9 @@
         function generateCalendars() {
             const startMonth = document.getElementById('startMonth').value;
             const numMonths = parseInt(document.getElementById('numMonths').value);
-            const cycleLength = parseInt(document.getElementById('cycleLength').value);
             
             if (!startMonth) {
-                alert('Please select a start month');
+                alert('⚠️ Please select a start month');
                 return;
             }
             
@@ -386,17 +740,19 @@
                 const id = card.id.split('-')[1];
                 const name = document.getElementById(`name-${id}`).value;
                 const periodDate = document.getElementById(`period-${id}`).value;
+                const cycleLength = parseInt(document.getElementById(`cycle-${id}`).value);
                 
                 if (name && periodDate) {
                     people.push({
                         name: name,
-                        periodStart: new Date(periodDate)
+                        periodStart: new Date(periodDate + 'T00:00:00'),
+                        cycleLength: cycleLength
                     });
                 }
             });
             
             if (people.length === 0) {
-                alert('Please add at least one person');
+                alert('⚠️ Please add at least one person with their information');
                 return;
             }
             
@@ -415,23 +771,35 @@
                     
                     const sheetData = [];
                     
-                    // Title
-                    sheetData.push([`FAST LIKE A GIRL - ${person.name}'s ${monthName} ${currentYear}`]);
-                    sheetData.push([`Cycle Start: ${person.periodStart.toLocaleDateString()} (${cycleLength}-day cycle)`]);
+                    // Enhanced title section
+                    sheetData.push([`FAST LIKE A GIRL - ${person.name}'s ${monthName} ${currentYear} Calendar`]);
+                    sheetData.push([`Cycle Information: ${person.cycleLength}-day cycle starting ${person.periodStart.toLocaleDateString()}`]);
+                    sheetData.push([`Generated: ${new Date().toLocaleDateString()}`]);
                     sheetData.push([]);
-                    sheetData.push(['Date', 'Day', 'Cycle Day', 'Phase', 'Fasting', 'Workout', 'Notes']);
+                    
+                    // Phase legend
+                    sheetData.push(['PHASE LEGEND']);
+                    sheetData.push(['🔴 Menstruation (Days 1-5): Rest & gentle movement, 0-13h fasting']);
+                    sheetData.push(['🟡 Power Phase (Days 6-12): HIIT & heavy lifting, 13-72h fasting']);
+                    sheetData.push(['🟢 Manifestation (Days 13-15): Peak energy & strength, 13-72h fasting']);
+                    sheetData.push(['🔵 Nurture Phase (Days 16-19): Moderate workouts, 13-15h fasting']);
+                    sheetData.push(['🟣 Pre-Menstrual (Days 20-28): Restorative yoga, 0-13h fasting']);
+                    sheetData.push([]);
+                    
+                    // Headers
+                    sheetData.push(['Date', 'Day', 'Cycle Day', 'Phase', 'Fasting Window', 'Workout Type', 'Notes', 'Mood/Energy']);
                     
                     // Generate days
                     for (let day = 1; day <= daysInMonth; day++) {
                         const currentDate = new Date(currentYear, currentMonth.getMonth(), day);
-                        const cycleDay = calculateCycleDay(currentDate, person.periodStart, cycleLength);
+                        const cycleDay = calculateCycleDay(currentDate, person.periodStart, person.cycleLength);
                         
                         let phase = '';
                         let fasting = '';
                         let workout = '';
                         
                         if (cycleDay) {
-                            const phaseInfo = getPhaseInfo(cycleDay);
+                            const phaseInfo = getPhaseInfo(cycleDay, person.cycleLength);
                             if (phaseInfo) {
                                 phase = `${phaseInfo.emoji} ${phaseInfo.name}`;
                                 fasting = phaseInfo.fasting;
@@ -439,28 +807,40 @@
                             }
                         }
                         
+                        const dayName = currentDate.toLocaleDateString('en-US', { weekday: 'short' });
+                        const dateStr = `${currentMonth.getMonth() + 1}/${day}/${currentYear}`;
+                        
                         sheetData.push([
-                            `${currentMonth.getMonth() + 1}/${day}`,
-                            currentDate.toLocaleDateString('en-US', { weekday: 'short' }),
-                            cycleDay || '',
+                            dateStr,
+                            dayName,
+                            cycleDay || 'N/A',
                             phase,
                             fasting,
                             workout,
-                            ''
+                            '', // Notes column
+                            ''  // Mood/Energy column
                         ]);
                     }
                     
                     const ws = XLSX.utils.aoa_to_sheet(sheetData);
                     
-                    // Set column widths
+                    // Enhanced column widths
                     ws['!cols'] = [
-                        {wch: 10},
-                        {wch: 10},
-                        {wch: 10},
-                        {wch: 20},
-                        {wch: 12},
-                        {wch: 18},
-                        {wch: 25}
+                        {wch: 12},  // Date
+                        {wch: 10},  // Day
+                        {wch: 11},  // Cycle Day
+                        {wch: 25},  // Phase
+                        {wch: 16},  // Fasting
+                        {wch: 22},  // Workout
+                        {wch: 30},  // Notes
+                        {wch: 15}   // Mood/Energy
+                    ];
+                    
+                    // Set row heights for title section
+                    ws['!rows'] = [
+                        {hpt: 20}, // Title
+                        {hpt: 15}, // Subtitle
+                        {hpt: 15}  // Generated date
                     ];
                     
                     const sheetName = `${person.name} ${monthName}`.substring(0, 31);
@@ -468,8 +848,9 @@
                 }
             });
             
-            // Generate filename
-            const filename = `FLAG_Calendars_${startMonth}.xlsx`;
+            // Generate filename with timestamp
+            const timestamp = new Date().toISOString().slice(0, 10);
+            const filename = `FLAG_Calendars_${startMonth}_${timestamp}.xlsx`;
             
             // Save file
             XLSX.writeFile(wb, filename);
